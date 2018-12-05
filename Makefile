@@ -21,17 +21,22 @@ subdirs            = examples
 
 libs               = libfemto
 
-configs            = rv32imac rv64imac
+configs            = rv32im rv32imac rv64imac
+
+CC_rv32im          = $(CROSS_COMPILE)gcc
+CFLAGS_rv32im      = -g -march=rv32im -mabi=ilp32 -Ienv/common/rv32
+LDFLAGS_rv32im     =
 
 CC_rv32imac        = $(CROSS_COMPILE)gcc
-CFLAGS_rv32imac    = -Os -march=rv32imac -mabi=ilp32 -Ienv/common/rv32
+CFLAGS_rv32imac    = -g -march=rv32imac -mabi=ilp32 -Ienv/common/rv32
 LDFLAGS_rv32imac   =
 
 CC_rv64imac        = $(CROSS_COMPILE)gcc
-CFLAGS_rv64imac    = -Os -march=rv64imac -mabi=lp64  -Ienv/common/rv64
+CFLAGS_rv64imac    = -g -march=rv64imac -mabi=lp64  -Ienv/common/rv64
 LDFLAGS_rv64imac   =
 
-targets            = rv32imac:default \
+targets            = rv32im:default \
+                     rv32imac:default \
                      rv64imac:default \
                      rv32imac:spike \
                      rv64imac:spike \
