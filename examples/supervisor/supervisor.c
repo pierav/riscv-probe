@@ -3,7 +3,20 @@
 #ifdef __riscv
 #include "arch/riscv/encoding.h"
 #include "arch/riscv/machine.h"
+#include "arch/riscv/trap.h"
 #endif
+
+#define MTIMECMP_BASE	0x4000
+#define MTIME_BASE	0xbff8
+
+void machine_handler(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc)
+{
+#if 0
+	printf("Caught a trap @0x%p\n", mepc);
+#endif
+	uint64_t time = *(volatile uint64_t *) (CLINT_BASE + MTIME_BASE);
+	*(volatile uint64_t *) (CLINT_BASE + MTIMECMP_BASE) = time + 1000000;
+}
 
 int main(int argc, char **argv)
 {
@@ -19,9 +32,28 @@ int main(int argc, char **argv)
 	if (pmp_entry_count() > 0) {
 		pmp_allow_all();
 	}
+	set_trap_fn(machine_handler);
+	set_csr(mie, MIP_MTIP);
+	set_csr(mstatus, MSTATUS_MIE);
+	uint64_t time = *(volatile uint64_t *) (CLINT_BASE + MTIME_BASE);
+	*(volatile uint64_t *) (CLINT_BASE + MTIMECMP_BASE) = time + 1000000;
+        uint64_t status;
+        status = read_csr(mstatus);
+        printf("mstatus=0x%016x\n", status);
 	mode_set_and_continue(PRV_S);
 	puts("riscv-supervisor-mode");
+        status = read_csr(sstatus);
+        printf("sstatus=0x%016x\n", status);
+	while (1) {
+		asm("wfi");
+		putchar('.');
+		status = read_csr(sstatus);
+#if 0
+		printf("sstatus=0x%016x\n", status);
+#endif
+	}
 #else
 	puts("architecture-not-supported");
+	exit(1);
 #endif
 }
