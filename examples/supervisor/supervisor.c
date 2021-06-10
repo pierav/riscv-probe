@@ -44,6 +44,19 @@ int main(int argc, char **argv)
 	puts("riscv-supervisor-mode");
         status = read_csr(sstatus);
         printf("sstatus=0x%016x\n", status);
+        extern uint64_t pgdir[4096];
+        uint64_t satp_value = (0x8ul << 60) | ((uint64_t)pgdir << 12);
+        /* 1:1 gigapage mapping =>
+           0x8000 0000 -> 0xbfff ffff mapped to 0x8000 0000 -> 0xbfff ffff
+           VPN[2]    VPN[1]    VPN[0]    page  offset
+           000000010 000000000 000000000 000000000000 -> 000000010 111111111 111111111 111111111111
+           page directory entry : 2
+           PPN[2]    PPN[1]    PPN[0]    page  offset
+           000000010 000000000 000000000 000000000000 -> 000000010 111111111 111111111 111111111111
+        */
+        pgdir[2] = (2 << 28) | 0xf;
+        write_csr(satp, satp_value);
+
 	while (1) {
 		asm("wfi");
 		putchar('.');
