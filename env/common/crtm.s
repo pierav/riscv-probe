@@ -26,6 +26,10 @@ _start:
     csrr    a0, mhartid
     bnez    a0, park
 
+    # activate fpu
+    li  t0, 0x00006000
+    csrs    mstatus, t0
+
     # jump to libfemto_start_main
     j       libfemto_start_main
 

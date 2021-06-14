@@ -2,10 +2,10 @@ CROSS_COMPILE      ?= riscv64-unknown-elf-
 
 AR                 = $(CROSS_COMPILE)ar
 
-CFLAGS             = -mcmodel=medany -ffunction-sections -fdata-sections
-LDFLAGS            = -nostartfiles -nostdlib -nostdinc -static -lgcc \
-                     -Wl,--nmagic -Wl,--gc-sections
-INCLUDES           = -Ienv/common
+CFLAGS             = -mcmodel=medany -ffunction-sections -fdata-sections -ffast-math #-nostdinc
+LDFLAGS            = -nostartfiles -static -lgcc examples/polybench/polybench-code/utilities/polybench.o \
+                     -Wl,--nmagic -Wl,--gc-sections #-nostdlib
+INCLUDES           = -Ienv/common -Iexamples/polybench/polybench-code/utilities
 
 libfemto_dirs      = libfemto/std libfemto/drivers libfemto/arch/riscv
 libfemto_src       = $(sort $(foreach d,$(libfemto_dirs),$(wildcard $(d)/*.c)))
@@ -32,10 +32,10 @@ CFLAGS_rv32imac    = -g -march=rv32imac -mabi=ilp32 -Ienv/common/rv32
 LDFLAGS_rv32imac   =
 
 CC_rv64imac        = $(CROSS_COMPILE)gcc
-CFLAGS_rv64imac    = -g -march=rv64imac -mabi=lp64  -Ienv/common/rv64
+CFLAGS_rv64imac    = -g -march=rv64imadc -mabi=lp64d  -Ienv/common/rv64
 LDFLAGS_rv64imac   =
 
-targets            = rv32im:default \
+#targets            = rv32im:default \
                      rv32imac:default \
                      rv64imac:default \
                      rv32imac:spike \
@@ -47,15 +47,19 @@ targets            = rv32im:default \
                      rv32imac:qemu-sifive_u \
                      rv64imac:qemu-sifive_u \
                      rv32imac:coreip-e2-arty
+targets            = rv64imac:virt
 
 #
 # make rules
 #
 
-all: all_programs
+all: examples/polybench/polybench-code/utilities/polybench.o all_programs
+
+examples/polybench/polybench-code/utilities/polybench.o: examples/polybench/polybench-code/utilities/polybench.c
+	$(CC_rv64imac) $(CFLAGS) $(CFLAGS_rv64imac) -c $< -o $@
 
 clean:
-	rm -fr build
+	rm -fr examples/polybench/polybench-code/utilities/polybench.o build
 
 backup: clean
 	tar czf ../$(shell basename $(shell pwd)).tar.gz .
@@ -104,7 +108,8 @@ $(foreach l,$(libs),$(eval $(call lib,$(l))))
 # Build system functions to generate build rules for all subdirs
 #
 
-sub_makes := $(foreach dir,$(subdirs),$(wildcard ${dir}/*/rules.mk))
+#sub_makes := $(foreach dir,$(subdirs),$(wildcard ${dir}/*/rules.mk))
+sub_makes := $(shell find . -name rules.mk)
 $(foreach makefile,$(sub_makes),$(eval include $(makefile)))
 sub_dirs := $(foreach m,$(sub_makes),$(m:/rules.mk=))
 module_name = $(lastword $(subst /, ,$(1)))

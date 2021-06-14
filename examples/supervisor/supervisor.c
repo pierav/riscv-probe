@@ -45,7 +45,7 @@ int main(int argc, char **argv)
         status = read_csr(sstatus);
         printf("sstatus=0x%016x\n", status);
         extern uint64_t pgdir[4096];
-        uint64_t satp_value = (0x8ul << 60) | ((uint64_t)pgdir << 12);
+        uint64_t satp_value = ((uint64_t)0x8 << 60) | (((uint64_t)pgdir) << 12);
         /* 1:1 gigapage mapping =>
            0x8000 0000 -> 0xbfff ffff mapped to 0x8000 0000 -> 0xbfff ffff
            VPN[2]    VPN[1]    VPN[0]    page  offset
