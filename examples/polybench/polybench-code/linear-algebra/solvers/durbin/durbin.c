@@ -1,5 +1,7 @@
 /* durbin.c: this file is part of PolyBench/C */
 
+typedef unsigned int wint_t;
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
