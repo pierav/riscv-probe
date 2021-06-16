@@ -1,1 +1,1 @@
-supervisor_objs = supervisor.o pgdir.o
+supervisor_objs = supervisor.o
