@@ -2,8 +2,8 @@ CROSS_COMPILE      ?= riscv64-unknown-elf-
 
 AR                 = $(CROSS_COMPILE)ar
 
-CFLAGS             = -mcmodel=medany -ffunction-sections -fdata-sections -ffast-math #-nostdinc
-LDFLAGS            = -nostartfiles -static -lgcc examples/polybench/polybench-code/utilities/polybench.o \
+CFLAGS             = -mcmodel=medany -ffunction-sections -fdata-sections -ffast-math -ffreestanding
+LDFLAGS            = -nostartfiles -nostdlib -static -lgcc examples/polybench/polybench-code/utilities/polybench.o \
                      -Wl,--nmagic -Wl,--gc-sections #-nostdlib
 INCLUDES           = -Ienv/common -Iexamples/polybench/polybench-code/utilities
 
@@ -47,6 +47,7 @@ LDFLAGS_rv64imac   =
                      rv32imac:qemu-sifive_u \
                      rv64imac:qemu-sifive_u \
                      rv32imac:coreip-e2-arty
+
 targets            = rv64imac:virt
 
 #

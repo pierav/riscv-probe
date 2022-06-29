@@ -221,12 +221,6 @@ extern void polybench_papi_print();
 /* Function prototypes. */
 extern void* polybench_alloc_data(unsigned long long int n, int elt_size);
 
-
-double
-sqrt (double x)
-{
-  asm ("fsqrt.s %0, %1" : "=f" (x) : "f" (x));
-  return x;
-}
+#define fprintf(f, ...) printf(__VA_ARGS__)
 
 #endif /* !POLYBENCH_H */
