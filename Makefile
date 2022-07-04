@@ -2,7 +2,7 @@ CROSS_COMPILE      ?= riscv64-unknown-elf-
 
 AR                 = $(CROSS_COMPILE)ar
 
-CFLAGS             = -O3 -mcmodel=medany -ffunction-sections -fdata-sections -ffast-math -ffreestanding -nostdinc -DPOLYBENCH_DUMP_ARRAYS
+CFLAGS             = -O3 -mcmodel=medany -ffunction-sections -fdata-sections -ffast-math -ffreestanding -nostdinc -DPOLYBENCH_DUMP_ARRAYS -DSMALL_DATASET
 LDFLAGS            = -nostartfiles -static -lgcc examples/polybench/polybench-code/utilities/polybench.o \
                      -Wl,--nmagic -Wl,--gc-sections -nostdlib
 INCLUDES           = -Ienv/common -Iexamples/polybench/polybench-code/utilities -Ilibfemto/include
@@ -32,8 +32,9 @@ CFLAGS_rv32imac    = -g -march=rv32imac -mabi=ilp32 -Ienv/common/rv32
 LDFLAGS_rv32imac   =
 
 CC_rv64imac        = $(CROSS_COMPILE)gcc
-CFLAGS_rv64imac    = -g -march=rv64imadc -mabi=lp64d  -Ienv/common/rv64
-LDFLAGS_rv64imac   =
+CFLAGS_rv64imac    = -g -march=rv64gc -mabi=lp64d  -Ienv/common/rv64
+CXPATH            := $(shell command -v $(CC_rv64imac) | sed -e 's/bin.*//')/$(CROSS_COMPILE:-=)
+LDFLAGS_rv64imac   = -L$(CXPATH)/lib -lm
 
 #targets            = rv32im:default \
                      rv32imac:default \
@@ -121,7 +122,7 @@ define rule =
 build/bin/$(3)/$(4)/$(1): \
 build/obj/$(3)/env/$(4)/crt.o build/obj/$(3)/env/$(4)/setup.o $(2) $$(LIBS_$(3))
 	$$(call cmd,LD.$(3) $$@,$$(@D),$(CC_$(3)) $(CFLAGS_$(3)) $$(CFLAGS) \
-	$$(LDFLAGS_$(3)) $$(LDFLAGS) -T env/$(4)/default.lds $$^ -o $$@) -lm
+	$$(LDFLAGS) -T env/$(4)/default.lds $$^ $$(LDFLAGS_$(3)) -o $$@)
 endef
 
 define module =
