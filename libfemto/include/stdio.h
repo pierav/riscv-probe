@@ -9,6 +9,9 @@ extern "C" {
 
 int getchar(void);
 int printf(const char *, ...);
+/* Hack hack hack */
+enum{stdout = 1, stderr = 2};
+int fprintf(int fd, const char *, ...);
 int putchar(int);
 int puts(const char *);
 int snprintf(char *, size_t, const char *, ...);
