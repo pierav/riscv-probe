@@ -2,10 +2,10 @@ CROSS_COMPILE      ?= riscv64-unknown-elf-
 
 AR                 = $(CROSS_COMPILE)ar
 
-CFLAGS             = -mcmodel=medany -ffunction-sections -fdata-sections -ffast-math #-nostdinc
+CFLAGS             = -O3 -mcmodel=medany -ffunction-sections -fdata-sections -ffast-math -ffreestanding -nostdinc -DPOLYBENCH_DUMP_ARRAYS
 LDFLAGS            = -nostartfiles -static -lgcc examples/polybench/polybench-code/utilities/polybench.o \
-                     -Wl,--nmagic -Wl,--gc-sections #-nostdlib
-INCLUDES           = -Ienv/common -Iexamples/polybench/polybench-code/utilities
+                     -Wl,--nmagic -Wl,--gc-sections -nostdlib
+INCLUDES           = -Ienv/common -Iexamples/polybench/polybench-code/utilities -Ilibfemto/include
 
 libfemto_dirs      = libfemto/std libfemto/drivers libfemto/arch/riscv
 libfemto_src       = $(sort $(foreach d,$(libfemto_dirs),$(wildcard $(d)/*.c)))
@@ -56,7 +56,7 @@ targets            = rv64imac:virt
 all: examples/polybench/polybench-code/utilities/polybench.o all_programs
 
 examples/polybench/polybench-code/utilities/polybench.o: examples/polybench/polybench-code/utilities/polybench.c
-	$(CC_rv64imac) $(CFLAGS) $(CFLAGS_rv64imac) -c $< -o $@
+	$(CC_rv64imac) $(CFLAGS) $(CFLAGS_rv64imac) $(INCLUDES) -c $< -o $@
 
 clean:
 	rm -fr examples/polybench/polybench-code/utilities/polybench.o build
