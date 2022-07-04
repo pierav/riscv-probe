@@ -1,13 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <assert.h>
-#include <time.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <sched.h>
-#include <math.h>
 #ifdef _OPENMP
 # include <omp.h>
 #endif
@@ -44,6 +37,7 @@ double polybench_program_total_flops = 0;
 double polybench_t_start, polybench_t_end;
 /* Timer code (RDTSC). */
 unsigned long long int polybench_c_start, polybench_c_end;
+
 
 static
 double rtclock()
@@ -398,3 +392,5 @@ void* polybench_alloc_data(unsigned long long int n, int elt_size)
 
   return ret;
 }
+
+unsigned int __errno;
