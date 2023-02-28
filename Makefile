@@ -32,7 +32,7 @@ CFLAGS_rv32imac    = -g -march=rv32imac -mabi=ilp32 -Ienv/common/rv32
 LDFLAGS_rv32imac   =
 
 CC_rv64imac        = $(CROSS_COMPILE)gcc
-CFLAGS_rv64imac    = -g -march=rv64imadc -mabi=lp64d  -Ienv/common/rv64
+CFLAGS_rv64imac    = -g -march=rv64imafdc -mabi=lp64d  -Ienv/common/rv64
 LDFLAGS_rv64imac   =
 
 #targets            = rv32im:default \
