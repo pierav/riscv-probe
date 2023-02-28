@@ -2,10 +2,10 @@ CROSS_COMPILE      ?= riscv64-unknown-elf-
 
 AR                 = $(CROSS_COMPILE)ar
 
-CFLAGS             = -mcmodel=medany -ffunction-sections -fdata-sections -ffast-math -ffreestanding
+CFLAGS             = -mcmodel=medany -ffunction-sections -fdata-sections -ffast-math -ffreestanding $(USER_CFLAGS)
 LDFLAGS            = -nostartfiles -nostdlib -static -lgcc examples/polybench/polybench-code/utilities/polybench.o \
-                     -Wl,--nmagic -Wl,--gc-sections #-nostdlib
-INCLUDES           = -Ienv/common -Iexamples/polybench/polybench-code/utilities
+                     -Wl,--nmagic -Wl,--gc-sections $(USER_LDFLAGS)
+INCLUDES           = -Ienv/common -Iexamples/polybench/polybench-code/utilities $(USER_INCLUDES)
 
 libfemto_dirs      = libfemto/std libfemto/drivers libfemto/arch/riscv
 libfemto_src       = $(sort $(foreach d,$(libfemto_dirs),$(wildcard $(d)/*.c)))
